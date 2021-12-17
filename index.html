@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Validation</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+    
+    <form action="" id="form" class="form">
+        <div class="form-group">
+            <label for="name">Name</label>
+            <input type="text" id="name" name="name" class="form-control" hpt-required hpt-required-message="Name is required!" />
+        </div>
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="text" id="email" name="email" class="form-control" hpt-required hpt-required-message="Email is required!" />
+        </div>
+        <div class="form-group">
+            <label for="age">Age</label>
+            <input type="text" id="age" name="age" class="form-control" hpt-max="150" hpt-max-message="It should be longer than 150." />
+        </div>
+
+        <div class="action-btn-wrapper">
+            <button type="submit">Save</button>
+        </div>
+
+    </form>
+
+    <form action="" id="form2" class="form">
+        <div class="form-group">
+            <label for="name">Name</label>
+            <input type="text" id="name" name="name" class="form-control" hpt-required hpt-required-message="Name is required!" />
+        </div>
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="text" id="email" name="email" class="form-control" hpt-url hpt-required hpt-required-message="Email is required!" />
+        </div>
+        <div class="form-group">
+            <label for="age">Age</label>
+            <input type="text" id="age" name="age" class="form-control" hpt-max="150" hpt-max-message="It should be longer than 150." />
+        </div>
+
+        <div class="action-btn-wrapper">
+            <button type="submit">Save</button>
+        </div>
+
+    </form>
+
+    <script>
+        const form = document.getElementById("form");
+        const form2 = document.getElementById("form2");
+
+        document.addEventListener("keydown", function(event) {
+            if ( event.target.nodeName === "INPUT" &&  event.target.nextSibling !== null) {
+                event.target.nextSibling.remove();
+            }
+        });
+
+        form.addEventListener("submit", function(event) {
+
+            let validation = formValidation(event.target);
+
+            console.log(validation);
+
+            event.preventDefault();
+        });
+
+
+        form2.addEventListener("submit", function(event) {
+
+            let validation = formValidation(event.target);
+
+            console.log(validation);
+
+            event.preventDefault();
+        });
+
+
+        function showMessage(input, message) {
+            if ( message !== '' ) {
+                const parentElement = input.parentNode;
+                let messageELement = parentElement.querySelector(".error");
+
+                if ( messageELement === null ) {
+                    messageELement = document.createElement("div");
+                    messageELement.classList.add("error");
+                }
+                messageELement.textContent = message
+                parentElement.insertBefore(messageELement, input.nextSibling);
+            }
+        }
+
+
+        function formValidation(form) {
+            let valid = false;
+
+            let inputs = Array.from(form.elements);
+            const statusBag = [];
+            inputs.forEach(function(input) {
+                if ( input.hasAttribute('hpt-required')) {
+
+                    if ( input.value !== '' ) {
+                        statusBag.push(true);
+                    } else {
+                        statusBag.push(false);
+                        showMessage(input, input.getAttribute('hpt-required-message'));
+                    }
+                }
+
+                //max check
+                if ( input.value !== '' && input.hasAttribute('hpt-max') ) {
+                    let max = parseInt(input.getAttribute('hpt-max'), 10);
+
+                    if ( input.value < max  ) {
+                        statusBag.push(true);
+                    } else {
+                        statusBag.push(false);
+                        showMessage(input, input.getAttribute('hpt-max-message'));
+                    }
+
+                }
+
+            });
+
+            return  (! statusBag.includes(false) );
+        }
+
+    </script>
+</body>
+</html>
